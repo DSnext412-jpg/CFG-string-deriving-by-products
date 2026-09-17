@@ -1,5 +1,4 @@
 from collections import deque
-
 def is_non_terminal(char):
     return char.isupper()
 
@@ -16,8 +15,7 @@ def parse_grammar():
     while True:
 
         line=input("Production: ").strip()
-
-        if line.upper() == "DONE":
+        if line.upper()=="DONE":
             break
 
         if "->" not in line:
@@ -31,7 +29,6 @@ def parse_grammar():
         left = left.strip()
         right = right.strip()
 
-        # Check left side
         if len(left) != 1 or not left.isupper():
 
             print(
@@ -40,7 +37,6 @@ def parse_grammar():
             )
             continue
 
-        # Split alternatives
         productions = [
             p.strip()
             for p in right.split("|")
@@ -57,9 +53,8 @@ def parse_grammar():
 
 
 def terminal_count(string):
-    return sum(1
-        for char in string
-        if not is_non_terminal(char)
+    return sum(
+        1 for char in string if not is_non_terminal(char)
     )
 
 
@@ -78,7 +73,7 @@ def find_leftmost_derivation(grammar, start, target):
     max_length=max(len(target)+5,20)
 
     while queue:
-        current, path=queue.popleft()
+        current,path=queue.popleft()
         if current==target:
             return path
         position = -1
@@ -88,13 +83,10 @@ def find_leftmost_derivation(grammar, start, target):
                 position = i
                 break
 
-        # No non-terminal
         if position == -1:
             continue
 
         non_terminal = current[position]
-
-        # No production for this non-terminal
         if non_terminal not in grammar:
             continue
 
@@ -237,10 +229,8 @@ def print_derivation(
         previous = path[i - 1]
         current = path[i]
 
-        nt, replacement = find_used_production(
-            previous,
-            current,
-            leftmost
+        nt,replacement=find_used_production(
+            previous,current, leftmost
         )
 
         if nt is not None:
@@ -260,18 +250,16 @@ def print_derivation(
 class Node:
 
     def __init__(self, value):
-
         self.value = value
         self.children = []
 
-
+root=0
 def build_leftmost_tree(path):
 
     if not path:
         return None
 
     for char in path[0]:
-
         current_nodes.append(
             Node(char)
         )
