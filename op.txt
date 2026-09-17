@@ -1,0 +1,65 @@
+======================================================================
+       CONTEXT FREE GRAMMAR DERIVATION TOOL
+======================================================================
+
+Rules:
+• Uppercase letters = Non-terminals
+• Everything else = Terminal
+• Numbers are terminals
+• Special characters are terminals
+
+Enter productions one by one.
+Example:
+S -> aB | bA
+A -> a | aS | bAA
+B -> b | bS | aBB
+
+Type DONE when finished.
+
+Production: S -> aB | bA 
+Production: A -> a | aS | bAA
+Production: B -> b | bS | aBB
+Production: done
+
+Your Grammar:
+----------------------------------------
+S -> aB | bA
+A -> a | aS | bAA
+B -> b | bS | aBB
+
+Enter start symbol [default S]: S
+Enter string to derive: bbaaba
+
+Searching for derivations...
+
+======================================================================
+RESULT
+======================================================================
+
+The string "bbaaba" CAN be derived from the given productions.
+
+======================================================================
+LEFTMOST DERIVATION
+======================================================================
+S
+   -> bA    (S -> bA)
+   -> bbAA    (A -> bAA)
+   -> bbaA    (A -> a)
+   -> bbaaS    (A -> aS)
+   -> bbaabA    (S -> bA)
+   -> bbaaba    (A -> a)
+
+======================================================================
+RIGHTMOST DERIVATION
+======================================================================
+S
+   -> bA    (S -> bA)
+   -> bbAA    (A -> bAA)
+   -> bbAa    (A -> a)
+   -> bbaSa    (A -> aS)
+   -> bbaaBa    (S -> aB)
+   -> bbaaba    (B -> b)
+
+======================================================================
+DERIVATION TREE
+======================================================================
