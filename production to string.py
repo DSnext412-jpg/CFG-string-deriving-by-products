@@ -1,9 +1,9 @@
 from collections import deque
+
 def is_non_terminal(char):
     return char.isupper()
 
 def parse_grammar():
-
     print("\nEnter productions one by one.")
     print("Example:")
     print("S -> aB | bA")
@@ -11,15 +11,15 @@ def parse_grammar():
     print("B -> b | bS | aBB")
     print("\nType DONE when finished.\n")
 
-    grammar={}
-    while True:
+    grammar = {}
 
-        line=input("Production: ").strip()
-        if line.upper()=="DONE":
+    while True:
+        line = input("Production: ").strip()
+
+        if line.upper() == "DONE":
             break
 
         if "->" not in line:
-
             print("Invalid production.")
             print("Use format: S -> aB | bA")
             continue
@@ -30,7 +30,6 @@ def parse_grammar():
         right = right.strip()
 
         if len(left) != 1 or not left.isupper():
-
             print(
                 "Left side must be one uppercase "
                 "non-terminal."
@@ -45,18 +44,17 @@ def parse_grammar():
         grammar.setdefault(left, [])
 
         for production in productions:
-
             if production not in grammar[left]:
                 grammar[left].append(production)
 
     return grammar
 
-
 def terminal_count(string):
     return sum(
-        1 for char in string if not is_non_terminal(char)
+        1
+        for char in string
+        if not is_non_terminal(char)
     )
-
 
 def possible_state(current, target):
     if terminal_count(current) > len(target):
@@ -64,21 +62,33 @@ def possible_state(current, target):
 
     return True
 
-def find_leftmost_derivation(grammar, start, target):
+def find_leftmost_derivation(
+    grammar,
+    start,
+    target
+):
+    queue = deque()
 
-    queue=deque()
-    queue.append((start,[start]))
-    visited=set()
-    visited.add(start)
-    max_length=max(len(target)+5,20)
+    queue.append(
+        (start, [start])
+    )
+
+    visited = {start}
+
+    max_length = max(
+        len(target) + 5,
+        20
+    )
 
     while queue:
-        current,path=queue.popleft()
-        if current==target:
-            return path
-        position = -1
-        for i, char in enumerate(current):
+        current, path = queue.popleft()
 
+        if current == target:
+            return path
+
+        position = -1
+
+        for i, char in enumerate(current):
             if is_non_terminal(char):
                 position = i
                 break
@@ -87,49 +97,72 @@ def find_leftmost_derivation(grammar, start, target):
             continue
 
         non_terminal = current[position]
+
         if non_terminal not in grammar:
             continue
 
         for production in grammar[non_terminal]:
-
-            new_string=(
+            new_string = (
                 current[:position]
-                +production
-                +current[position + 1:])
+                + production
+                + current[position + 1:]
+            )
 
-            if len(new_string)>max_length:
+            if len(new_string) > max_length:
                 continue
 
-            if not possible_state(new_string,target):
+            if not possible_state(
+                new_string,
+                target
+            ):
                 continue
 
             if new_string in visited:
                 continue
 
             visited.add(new_string)
-            new_path=path+[new_string]
-            queue.append((new_string, new_path))
+
+            queue.append(
+                (
+                    new_string,
+                    path + [new_string]
+                )
+            )
 
     return None
 
-def find_rightmost_derivation(grammar, start, target):
+def find_rightmost_derivation(
+    grammar,
+    start,
+    target
+):
+    queue = deque()
 
-    queue=deque()
-    queue.append((start,[start]))
-    visited = set()
-    visited.add(start)
-    max_length=max(len(target)+5,20)
+    queue.append(
+        (start, [start])
+    )
+
+    visited = {start}
+
+    max_length = max(
+        len(target) + 5,
+        20
+    )
+
     while queue:
-
         current, path = queue.popleft()
+
         if current == target:
             return path
 
-        position=-1
-        for i in range(len(current)-1,-1,-1):
+        position = -1
 
+        for i in range(
+            len(current) - 1,
+            -1,
+            -1
+        ):
             if is_non_terminal(current[i]):
-
                 position = i
                 break
 
@@ -142,34 +175,43 @@ def find_rightmost_derivation(grammar, start, target):
             continue
 
         for production in grammar[non_terminal]:
-            new_string=(current[:position]+production+current[position+1:])
+            new_string = (
+                current[:position]
+                + production
+                + current[position + 1:]
+            )
 
-            if len(new_string)>max_length:
+            if len(new_string) > max_length:
                 continue
 
-            if not possible_state(new_string,target):
+            if not possible_state(
+                new_string,
+                target
+            ):
                 continue
 
             if new_string in visited:
                 continue
 
             visited.add(new_string)
-            new_path=path+[new_string]
-            queue.append((new_string, new_path))
+
+            queue.append(
+                (
+                    new_string,
+                    path + [new_string]
+                )
+            )
 
     return None
-
 
 def find_used_production(
     previous,
     current,
     leftmost=True
 ):
-
     positions = []
 
     for i, char in enumerate(previous):
-
         if is_non_terminal(char):
             positions.append(i)
 
@@ -190,7 +232,6 @@ def find_used_production(
         return None, None
 
     if suffix:
-
         if not current.endswith(suffix):
             return None, None
 
@@ -198,9 +239,7 @@ def find_used_production(
             len(prefix):
             len(current) - len(suffix)
         ]
-
     else:
-
         replacement = current[
             len(prefix):
         ]
@@ -212,40 +251,35 @@ def print_derivation(
     title,
     leftmost=True
 ):
-
     print("\n" + "=" * 70)
     print(title)
     print("=" * 70)
 
     if path is None:
-
         print("No derivation found.")
         return
 
     print(path[0])
 
     for i in range(1, len(path)):
-
         previous = path[i - 1]
         current = path[i]
 
-        nt,replacement=find_used_production(
-            previous,current, leftmost
+        nt, replacement = find_used_production(
+            previous,
+            current,
+            leftmost
         )
 
         if nt is not None:
-
             print(
                 f"   -> {current}"
                 f"    ({nt} -> {replacement})"
             )
-
         else:
-
             print(
                 f"   -> {current}"
             )
-
 
 class Node:
 
@@ -253,27 +287,21 @@ class Node:
         self.value = value
         self.children = []
 
-root=0
 def build_leftmost_tree(path):
 
     if not path:
         return None
 
-    for char in path[0]:
-        current_nodes.append(
-            Node(char)
-        )
+    root = Node(path[0][0])
 
-    root.children = current_nodes
+    current_nodes = [root]
 
     for next_string in path[1:]:
 
         position = None
 
         for i, node in enumerate(current_nodes):
-
             if is_non_terminal(node.value):
-
                 position = i
                 break
 
@@ -304,7 +332,6 @@ def build_leftmost_tree(path):
             ]
 
         else:
-
             replacement = next_string[
                 len(prefix):
             ]
@@ -312,10 +339,8 @@ def build_leftmost_tree(path):
         children = []
 
         for char in replacement:
-
-            children.append(
-                Node(char)
-            )
+            child = Node(char)
+            children.append(child)
 
         node.children = children
 
@@ -333,13 +358,9 @@ def print_tree(
     is_last=True,
     root=True
 ):
-
     if root:
-
         print(node.value)
-
     else:
-
         connector = (
             "└── "
             if is_last
@@ -349,22 +370,32 @@ def print_tree(
         print(
             prefix
             + connector
-            + node.value)
+            + node.value
+        )
 
     if not node.children:
         return
 
     if root:
         new_prefix = ""
-
     else:
-
-        new_prefix=(prefix + ("    " if is_last else "│   "))
+        new_prefix = (
+            prefix
+            + ("    " if is_last else "│   ")
+        )
 
     for i, child in enumerate(node.children):
-        last=(i==len(node.children)-1)
-        print_tree(child,new_prefix,last,False)
 
+        last = (
+            i == len(node.children) - 1
+        )
+
+        print_tree(
+            child,
+            new_prefix,
+            last,
+            False
+        )
 
 def main():
 
@@ -381,7 +412,6 @@ def main():
     grammar = parse_grammar()
 
     if not grammar:
-
         print("\nNo productions entered.")
         return
 
@@ -389,7 +419,6 @@ def main():
     print("-" * 40)
 
     for nt, productions in grammar.items():
-
         print(
             f"{nt} -> "
             + " | ".join(productions)
@@ -402,29 +431,33 @@ def main():
     if not start:
         start = "S"
 
-
     target = input(
         "Enter string to derive: "
     ).strip()
 
     print("\nSearching for derivations...")
 
- 
-    left_path=find_leftmost_derivation(grammar,start,target)
-    right_path=find_rightmost_derivation(grammar,start,target)
+    left_path = find_leftmost_derivation(
+        grammar,
+        start,
+        target
+    )
 
- 
+    right_path = find_rightmost_derivation(
+        grammar,
+        start,
+        target
+    )
+
     print("\n" + "=" * 70)
     print("RESULT")
     print("=" * 70)
 
     if left_path is None and right_path is None:
-
         print(
             f'\nThe string "{target}" '
             "cannot be derived from the given productions."
         )
-
         return
 
     print(
@@ -433,38 +466,35 @@ def main():
     )
 
     if left_path:
-
         print_derivation(
             left_path,
             "LEFTMOST DERIVATION",
             leftmost=True
         )
-
     else:
-
-        print("\nNo leftmost derivation found.")
-
+        print(
+            "\nNo leftmost derivation found."
+        )
 
     if right_path:
-
         print_derivation(
             right_path,
             "RIGHTMOST DERIVATION",
             leftmost=False
         )
-
     else:
+        print(
+            "\nNo rightmost derivation found."
+        )
 
-        print("\nNo rightmost derivation found.")
-
-  
     if left_path:
-
         print("\n" + "=" * 70)
         print("DERIVATION TREE")
         print("=" * 70)
 
-        tree=build_leftmost_tree(left_path)
+        tree = build_leftmost_tree(
+            left_path
+        )
 
         print_tree(tree)
 
